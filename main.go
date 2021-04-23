@@ -50,6 +50,15 @@ var DefaultFuncs = template.FuncMap{
 	},
 }
 
+func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
+	tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
+	log.Printf("tlfName: %s", tlfName)
+
+	if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
+		log.Printf("Error sending message: %+v", err)
+	}
+}
+
 func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -66,17 +75,12 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 
 		log.Printf("Received and parsed incoming webook: %+v", wh)
 
-		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
-		log.Printf("tlfName: %s", tlfName)
-
 		writer := bytes.NewBufferString("")
 
 		tmpl.ExecuteTemplate(writer, "keybaseAlert", *wh)
 		log.Printf("%s", writer.String())
 
-		if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-			log.Printf("Error sending message: %+v", err)
-		}
+		sendToKeybase(kbc, recipient, writer.String())
 	}
 
 }
@@ -119,12 +123,7 @@ func handleWatchdog(kbc *kbchat.API, recipient string, tmpl *template.Template) 
 					writer := bytes.NewBufferString("")
 					tmpl.ExecuteTemplate(writer, "watchdogAlertRecover", entry.lastAlert)
 
-					tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
-					log.Printf("tlfName: %s", tlfName)
-
-					if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-						log.Printf("Error sending message: %+v", err)
-					}
+					sendToKeybase(kbc, recipient, writer.String())
 				}
 
 				entry.firing = false
@@ -199,12 +198,7 @@ func main() {
 						writer := bytes.NewBufferString("")
 						tmpl.ExecuteTemplate(writer, "watchdogAlertFire", watchdog.lastAlert)
 
-						tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
-						log.Printf("tlfName: %s", tlfName)
-
-						if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-							log.Printf("Error sending message: %+v", err)
-						}
+						sendToKeybase(kbc, recipient, writer.String())
 					}
 				}
 			}
