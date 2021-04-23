@@ -51,11 +51,24 @@ var DefaultFuncs = template.FuncMap{
 }
 
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
-	tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
-	log.Printf("tlfName: %s", tlfName)
+	if strings.ContainsRune(message, '#') {
+		// send message to team
 
-	if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
-		log.Printf("Error sending message: %+v", err)
+		teamChannel := strings.Split(recipient, "#")
+		team, channel := teamChannel[0], teamChannel[1]
+
+		if _, err := kbc.SendMessageByTeamName(team, &channel, message); err != nil {
+			log.Printf("Error sending message: %+v", err)
+		}
+	} else {
+		// send message to user
+
+		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
+		log.Printf("tlfName: %s", tlfName)
+
+		if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
+			log.Printf("Error sending message: %+v", err)
+		}
 	}
 }
 
