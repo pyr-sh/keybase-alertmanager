@@ -29,7 +29,9 @@ Usage of ./kbam:
   -template string
         Go text template definition file (default "default.tmpl")
   -recipient string
-        Keybase user or team#channel to send message to
+        Keybase recipient to send message to:
+        1) 'team#channel' - to teams
+        2) 'username' - directly to a user
 ```
 
 ### Templates
