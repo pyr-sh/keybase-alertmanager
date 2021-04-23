@@ -12,7 +12,7 @@ $ go build -mod=vendor .
 ### Running
 
 ```bash
-$ ./kbam -user <keybase recipient>
+$ ./kbam -recipient <keybase recipient>
 ```
 Additional options are available to tweak behaviour:
 ```bash
@@ -28,8 +28,10 @@ Usage of ./kbam:
         Port to listen for webhooks (default 3000)
   -template string
         Go text template definition file (default "default.tmpl")
-  -user string
-        Keybase user to send message to
+  -recipient string
+        Keybase recipient to send message to:
+        1) 'team#channel' - to teams
+        2) 'username' - directly to a user
 ```
 
 ### Templates

@@ -50,7 +50,29 @@ var DefaultFuncs = template.FuncMap{
 	},
 }
 
-func handleWebhook(kbc *kbchat.API, user string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
+func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
+	if strings.ContainsRune(message, '#') {
+		// send message to team
+
+		teamChannel := strings.Split(recipient, "#")
+		team, channel := teamChannel[0], teamChannel[1]
+
+		if _, err := kbc.SendMessageByTeamName(team, &channel, message); err != nil {
+			log.Printf("Error sending message: %+v", err)
+		}
+	} else {
+		// send message to user
+
+		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
+		log.Printf("tlfName: %s", tlfName)
+
+		if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
+			log.Printf("Error sending message: %+v", err)
+		}
+	}
+}
+
+func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		buf, err := ioutil.ReadAll(r.Body)
@@ -66,22 +88,17 @@ func handleWebhook(kbc *kbchat.API, user string, tmpl *template.Template) func(w
 
 		log.Printf("Received and parsed incoming webook: %+v", wh)
 
-		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), user)
-		log.Printf("tlfName: %s", tlfName)
-
 		writer := bytes.NewBufferString("")
 
 		tmpl.ExecuteTemplate(writer, "keybaseAlert", *wh)
 		log.Printf("%s", writer.String())
 
-		if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-			log.Printf("Error sending message: %+v", err)
-		}
+		sendToKeybase(kbc, recipient, writer.String())
 	}
 
 }
 
-func handleWatchdog(kbc *kbchat.API, user string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
+func handleWatchdog(kbc *kbchat.API, recipient string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		buf, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -119,12 +136,7 @@ func handleWatchdog(kbc *kbchat.API, user string, tmpl *template.Template) func(
 					writer := bytes.NewBufferString("")
 					tmpl.ExecuteTemplate(writer, "watchdogAlertRecover", entry.lastAlert)
 
-					tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), user)
-					log.Printf("tlfName: %s", tlfName)
-
-					if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-						log.Printf("Error sending message: %+v", err)
-					}
+					sendToKeybase(kbc, recipient, writer.String())
 				}
 
 				entry.firing = false
@@ -150,13 +162,13 @@ func main() {
 	var listenPort int
 	var interval time.Duration
 	var expiry time.Duration
-	var user string
+	var recipient string
 	var templatePath string
 	var err error
 
 	flag.StringVar(&kbLoc, "keybase", "keybase", "the location of the Keybase app")
 	flag.IntVar(&listenPort, "port", 3000, "Port to listen for webhooks")
-	flag.StringVar(&user, "user", "", "Keybase user to send message to")
+	flag.StringVar(&recipient, "recipient", "", "Keybase user or team#channel to send message to")
 	flag.DurationVar(&interval, "interval", 10*time.Second, "The interval at which to check for watchdog expiry")
 	flag.DurationVar(&expiry, "expiry", 2*time.Minute, "The amount of time after which a non-pinging watchdog check will be considered to have expired")
 	flag.StringVar(&templatePath, "template", "default.tmpl", "Go text template definition file")
@@ -199,12 +211,7 @@ func main() {
 						writer := bytes.NewBufferString("")
 						tmpl.ExecuteTemplate(writer, "watchdogAlertFire", watchdog.lastAlert)
 
-						tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), user)
-						log.Printf("tlfName: %s", tlfName)
-
-						if _, err = kbc.SendMessageByTlfName(tlfName, writer.String()); err != nil {
-							log.Printf("Error sending message: %+v", err)
-						}
+						sendToKeybase(kbc, recipient, writer.String())
 					}
 				}
 			}
@@ -213,8 +220,8 @@ func main() {
 	}()
 	log.Printf("Started watchdog timer routine.")
 
-	http.HandleFunc("/webhook", handleWebhook(kbc, user, tmpl))
-	http.HandleFunc("/watchdog", handleWatchdog(kbc, user, tmpl))
+	http.HandleFunc("/webhook", handleWebhook(kbc, recipient, tmpl))
+	http.HandleFunc("/watchdog", handleWatchdog(kbc, recipient, tmpl))
 
 	log.Printf("Listening on port %d", listenPort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", listenPort), nil))
