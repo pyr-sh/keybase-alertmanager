@@ -30,7 +30,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - -user
+            - -recipient
             - "{{ .Values.destination }}"
           env:
             - name: KEYBASE_USERNAME
