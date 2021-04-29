@@ -48,6 +48,9 @@ var DefaultFuncs = template.FuncMap{
 	"stringSlice": func(s ...string) []string {
 		return s
 	},
+	"inc": func(i int) int {
+		return i + 1
+	},
 }
 
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
@@ -86,7 +89,7 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 			log.Printf("Error parsing webhook post: %+v", err)
 		}
 
-		log.Printf("Received and parsed incoming webook: %+v", wh)
+		log.Printf("Received and parsed incoming webhook: %+v", wh)
 
 		writer := bytes.NewBufferString("")
 
