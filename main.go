@@ -48,9 +48,6 @@ var DefaultFuncs = template.FuncMap{
 	"stringSlice": func(s ...string) []string {
 		return s
 	},
-	"inc": func(i int) int {
-		return i + 1
-	},
 }
 
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
