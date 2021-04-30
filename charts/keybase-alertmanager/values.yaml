@@ -71,3 +71,7 @@ tolerations: []
 affinity: {}
 
 messageTemplate: ""
+# Alert message template compatible with Golang templates. 
+#
+# When empty, uses default template available at:
+# https://github.com/damomurf/keybase-alertmanager/blob/master/default.tmpl
