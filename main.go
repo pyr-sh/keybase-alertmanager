@@ -174,7 +174,7 @@ func main() {
 	flag.StringVar(&recipient, "recipient", "", "Keybase user or team#channel to send message to")
 	flag.DurationVar(&interval, "interval", 10*time.Second, "The interval at which to check for watchdog expiry")
 	flag.DurationVar(&expiry, "expiry", 10*time.Minute, "The amount of time after which a non-pinging watchdog check will be considered to have expired")
-	flag.StringVar(&templatePath, "template", "custom.tmpl", "Go text template definition file")
+	flag.StringVar(&templatePath, "template", "default.tmpl", "Go text template definition file")
 	flag.Parse()
 
 	tmpl, err := template.New("default.tmpl").Funcs(DefaultFuncs).ParseFiles(templatePath)

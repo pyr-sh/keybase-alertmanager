@@ -32,6 +32,10 @@ spec:
           args:
             - -recipient
             - "{{ .Values.destination }}"
+            {{- if .Values.messageTemplate }}
+            - -template
+            - /templates/message.tmpl
+            {{end}}
           env:
             - name: KEYBASE_USERNAME
               valueFrom:
@@ -43,6 +47,11 @@ spec:
                 secretKeyRef:
                   name: "{{ .Values.secret }}"
                   key: KEYBASE_PAPERKEY
+          {{- if .Values.messageTemplate }}
+          volumeMounts:
+            - name: {{ include "keybase-alertmanager.fullname" . }}
+              mountPath: /templates
+          {{end}}
           ports:
             - name: http
               containerPort: 3000
@@ -57,6 +66,12 @@ spec:
           #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.messageTemplate }}
+      volumes:
+        - name: {{ include "keybase-alertmanager.fullname" . }}
+          configMap:
+            name: {{ include "keybase-alertmanager.fullname" . }}
+      {{end}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
