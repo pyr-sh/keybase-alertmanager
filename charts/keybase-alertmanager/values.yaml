@@ -15,6 +15,9 @@ fullnameOverride: ""
 
 secret: keybase-alertmanager
 destination: damomurf
+# Specifies the recipient of the message, two options possible:
+# - direct message to Keybase user: <username>
+# - message to a team: <team_name>#<channel>
 
 serviceAccount:
   # Specifies whether a service account should be created
