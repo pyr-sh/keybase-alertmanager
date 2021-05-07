@@ -14,9 +14,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 secret: keybase-alertmanager
-# Specifies the recipient of the message, two options possible:
-# - direct message to Keybase user: <username>
-# - message to a team: <teamName>#<channel>
+
+# Specifies the recipient of the message.
+# You can either pass a username or a team's channel
+# in the form of `teaamname#channel` or `teamname.subteam#channel`.
 destination: damomurf
 
 serviceAccount:
@@ -73,8 +74,5 @@ tolerations: []
 
 affinity: {}
 
-# Alert message template compatible with Golang templates. 
-#
-# When empty, uses default template available at:
-# https://github.com/damomurf/keybase-alertmanager/blob/master/default.tmpl
+# If set, the message template overrides the default one embedded into keybase-alertmanager.
 messageTemplate: ""
