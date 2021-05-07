@@ -6,7 +6,7 @@ COPY . /build/
 WORKDIR /build
 RUN go build -mod=vendor .
 
-FROM keybaseio/client:5.6.0-20200702122450-d407f6ad44-slim
+FROM keybaseio/client:5.7.0-20210126121847-cfdcb9f95f-slim
 
 COPY --from=builder /build/kbam /usr/bin/kbam
 COPY default.tmpl .

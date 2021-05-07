@@ -14,6 +14,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 secret: keybase-alertmanager
+
+# Specifies the recipient of the message.
+# You can either pass a username or a team's channel
+# in the form of `teaamname#channel` or `teamname.subteam#channel`.
 destination: damomurf
 
 serviceAccount:
@@ -69,3 +73,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# If set, the message template overrides the default one embedded into keybase-alertmanager.
+messageTemplate: ""

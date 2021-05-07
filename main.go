@@ -51,7 +51,7 @@ var DefaultFuncs = template.FuncMap{
 }
 
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
-	if strings.ContainsRune(message, '#') {
+	if strings.ContainsRune(recipient, '#') {
 		// send message to team
 
 		teamChannel := strings.Split(recipient, "#")
@@ -86,7 +86,7 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 			log.Printf("Error parsing webhook post: %+v", err)
 		}
 
-		log.Printf("Received and parsed incoming webook: %+v", wh)
+		log.Printf("Received and parsed incoming webhook: %+v", wh)
 
 		writer := bytes.NewBufferString("")
 
