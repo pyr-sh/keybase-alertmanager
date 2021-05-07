@@ -3,20 +3,11 @@ entries:
   keybase-alertmanager:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-04-30T21:54:44.3829454+02:00"
+    created: "2021-05-07T18:40:15.1083687+02:00"
     description: A Helm chart for Kubernetes
-    digest: 1578bfda6efb72792773063697c0c2acd181ee679f4ca0907bb85ff1a9d74acf
+    digest: e5be95f12f9f98db8c4bf8418fd3de79e39497829c6b2b153eae6f8ea1baa5c0
     name: keybase-alertmanager
     urls:
-    - https://github.com/pyr-sh/keybase-alertmanager/releases/download/1.1.0/keybase-alertmanager.tgz
-    version: 1.1.0
-  - apiVersion: v1
-    appVersion: "1.0"
-    created: "2021-04-26T15:45:35.6782823+02:00"
-    description: A Helm chart for Kubernetes
-    digest: f51f8360eae765b0f2fbaf849de0013590f2774c226eccf051fb703ca7997e4a
-    name: keybase-alertmanager
-    urls:
-    - https://github.com/pyr-sh/keybase-alertmanager/releases/download/1.0.0/keybase-alertmanager.tgz
-    version: 1.0.0
-generated: "2021-04-26T15:45:35.6772325+02:00"
+    - https://github.com/pyr-sh/keybase-alertmanager/releases/download/0.2.0/keybase-alertmanager-0.2.0.tgz
+    version: 0.2.0
+generated: "2021-05-07T18:40:15.1077949+02:00"
