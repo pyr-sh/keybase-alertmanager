@@ -8,7 +8,7 @@ entries:
     digest: c717a31495218f0e4734675aff05bc6f618f4e6b261dc08d89fdcc40ceb35140
     name: keybase-alertmanager
     urls:
-    - https://github.com/pyr-sh/keybase-alertmanager/releases/download/0.2.0/keybase-alertmanager-0.1.0.tgz
+    - https://github.com/pyr-sh/keybase-alertmanager/releases/download/0.1.0/keybase-alertmanager-0.1.0.tgz
     version: 0.1.0
   - apiVersion: v1
     appVersion: "1.0"
