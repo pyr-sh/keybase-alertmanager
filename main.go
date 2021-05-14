@@ -50,6 +50,10 @@ var DefaultFuncs = template.FuncMap{
 	},
 }
 
+func escapePercent(str string) string {
+	return strings.ReplaceAll(str, "%", "%%")
+}
+
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 	if strings.ContainsRune(recipient, '#') {
 		// send message to team
@@ -57,7 +61,7 @@ func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 		teamChannel := strings.Split(recipient, "#")
 		team, channel := teamChannel[0], teamChannel[1]
 
-		if _, err := kbc.SendMessageByTeamName(team, &channel, message); err != nil {
+		if _, err := kbc.SendMessageByTeamName(team, &channel, escapePercent(message)); err != nil {
 			log.Printf("Error sending message: %+v", err)
 		}
 	} else {
@@ -66,22 +70,10 @@ func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
 		log.Printf("tlfName: %s", tlfName)
 
-		if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
+		if _, err := kbc.SendMessageByTlfName(tlfName, escapePercent(message)); err != nil {
 			log.Printf("Error sending message: %+v", err)
 		}
 	}
-}
-
-// doublePercentAnnotation function converts single percent sign to double
-// percent sign for every annotation field in the array of alerts.
-// Single percent expects the argument. Double percent returns the literal percent sign.
-func doublePercentAnnotations(alerts []atmpl.Alert) []atmpl.Alert {
-	for i, alert := range alerts {
-		for k, v := range alert.Annotations {
-			alerts[i].Annotations[k] = strings.ReplaceAll(v, "%", "%%")
-		}
-	}
-	return alerts
 }
 
 func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
@@ -97,8 +89,6 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 		if err != nil {
 			log.Printf("Error parsing webhook post: %+v", err)
 		}
-
-		wh.Alerts = doublePercentAnnotations(wh.Alerts)
 
 		log.Printf("Received and parsed incoming webhook: %+v", wh)
 
