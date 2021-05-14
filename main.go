@@ -72,6 +72,18 @@ func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 	}
 }
 
+// doublePercentAnnotation function converts single percent sign to double
+// percent sign for every annotation field in the array of alerts.
+// Single percent expects the argument. Double percent returns the literal percent sign.
+func doublePercentAnnotations(alerts []atmpl.Alert) []atmpl.Alert {
+	for i, alert := range alerts {
+		for k, v := range alert.Annotations {
+			alerts[i].Annotations[k] = strings.ReplaceAll(v, "%", "%%")
+		}
+	}
+	return alerts
+}
+
 func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +94,8 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 
 		wh := &webhook.Message{}
 		err = json.Unmarshal(buf, wh)
+		wh.Alerts = doublePercentAnnotations(wh.Alerts)
+
 		if err != nil {
 			log.Printf("Error parsing webhook post: %+v", err)
 		}
