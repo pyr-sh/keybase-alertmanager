@@ -50,6 +50,10 @@ var DefaultFuncs = template.FuncMap{
 	},
 }
 
+func escapePercents(str string) string {
+	return strings.ReplaceAll(str, "%", "%%")
+}
+
 func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 	if strings.ContainsRune(recipient, '#') {
 		// send message to team
@@ -57,7 +61,7 @@ func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 		teamChannel := strings.Split(recipient, "#")
 		team, channel := teamChannel[0], teamChannel[1]
 
-		if _, err := kbc.SendMessageByTeamName(team, &channel, message); err != nil {
+		if _, err := kbc.SendMessageByTeamName(team, &channel, escapePercents(message)); err != nil {
 			log.Printf("Error sending message: %+v", err)
 		}
 	} else {
@@ -66,7 +70,7 @@ func sendToKeybase(kbc *kbchat.API, recipient string, message string) {
 		tlfName := fmt.Sprintf("%s,%s", kbc.GetUsername(), recipient)
 		log.Printf("tlfName: %s", tlfName)
 
-		if _, err := kbc.SendMessageByTlfName(tlfName, message); err != nil {
+		if _, err := kbc.SendMessageByTlfName(tlfName, escapePercents(message)); err != nil {
 			log.Printf("Error sending message: %+v", err)
 		}
 	}
