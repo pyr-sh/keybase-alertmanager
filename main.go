@@ -94,7 +94,6 @@ func handleWebhook(kbc *kbchat.API, recipient string, tmpl *template.Template) f
 
 		wh := &webhook.Message{}
 		err = json.Unmarshal(buf, wh)
-
 		if err != nil {
 			log.Printf("Error parsing webhook post: %+v", err)
 		}
